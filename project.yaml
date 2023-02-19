@@ -1,0 +1,112 @@
+specVersion: 1.0.0
+name: NominationPool-Pokadot-AV
+version: 0.0.2
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  The SubQuery Polkadot for Nomination Pool Block, Events and Extrinsics.
+repository: "https://github.com/Aditya-Varuna-AV/NominationPool-Polkadot.git"
+schema:
+  file: ./schema.graphql
+network:
+  # The genesis hash of the network (hash of block 0)
+  chainId: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+  # This endpoint must be a public non-pruned archive node
+  # Public nodes may be rate limited, which can affect indexing speed
+  # When developing your project we suggest getting a private API key
+  # You can get them from OnFinality for free https://app.onfinality.io
+  # https://documentation.onfinality.io/support/the-enhanced-api-service
+  endpoint: "wss://polkadot.api.onfinality.io/public-ws"
+  # endpoint: "ws://192.168.86.38:8000"
+  # Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
+  dictionary: "https://api.subquery.network/sq/subquery/polkadot-dictionary"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 12217607
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleExtrinsicNominationPoolsBondExtra
+          kind: substrate/CallHandler
+          filter:
+            success: true
+            module: nominationPools
+            method: bondExtra
+
+        - handler: handleExtrinsicNominationPoolsJoinPool
+          kind: substrate/CallHandler
+          filter:
+            success: true
+            module: nominationPools
+            method: join
+
+        - handler: handleEventNominationPoolsPaidOut
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
+        - handler: handleEventNominationPoolsBonded
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: Bonded
+
+        - handler: handleEventNominationPoolsCreated
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: Created
+
+        - handler: handleEventNominationPoolsPoolSlashed
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleEventNominationPoolsUnbonded
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: Unbonded
+
+        - handler: handleEventNominationPoolsWithdrawn
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: Withdrawn
+
+        - handler: handleEventNominationPoolsDestroyed
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: Destroyed
+
+        - handler: handleEventNominationPoolsStateChanged
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: StateChanged
+
+        - handler: handleEventNominationPoolsMemberRemoved
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: MemberRemoved
+
+        - handler: handleEventNominationPoolsRolesUpdated
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: RolesUpdated
+
+        - handler: handleEventNominationUnbondingPoolSlashed
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed

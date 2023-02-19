@@ -1,0 +1,23 @@
+import { SubstrateEvent } from '@subql/types';
+import { getEventId, getExtrinsicId } from '../../../helper/event.helper';
+import { NominationPoolPaidOutEvent } from '../../../types';
+
+/**
+ * A payout has been made to a member.
+ * @param event 
+ */
+export async function handleEventNominationPoolsPaidOut(event: SubstrateEvent): Promise<void> {
+  const account = event.event.data[0].toString();
+  const pool_id = event.event.data[1].toString();
+  const amount = event.event.data[2].toString();
+  const timestamp = event.block.timestamp;
+
+  const record = new NominationPoolPaidOutEvent(getEventId(event));
+  record.extrinsic_id = getExtrinsicId(event);
+  record.account = account;
+  record.amount = BigInt(amount);
+  record.pool_id = Number(pool_id);
+  record.timestamp = timestamp;
+
+  await record.save();
+}

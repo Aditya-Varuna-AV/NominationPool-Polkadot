@@ -1,0 +1,135 @@
+# To improve query performance, we strongly suggest adding indexes to any field that you plan to filter or sort by
+# Add the `@index` or `@index(unique: true)` annotation after any non-key field
+# https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
+
+# Store all the bond extra information
+type NominationPoolBondExtraExtrinsic @entity {
+  id: ID! # unique id for this entity
+  account: String! @index(unique: false)
+  type: NominationBondExtraType!
+  timestamp: Date!
+}
+
+enum NominationBondExtraType {
+  REWARDS
+  FREEBALANCE
+}
+
+type NominationPoolJoinExtrinsic @entity {
+  id: ID! #id is a required field
+  account: String! @index(unique: false)
+  amount: BigInt!
+  pool_id: Int!
+  timestamp: Date!
+}
+
+type NominationPoolPaidOutEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  account: String! @index(unique: false)
+  amount: BigInt!
+  pool_id: Int!
+  timestamp: Date!
+}
+
+type NominationPoolBondedEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  account: String! @index(unique: false)
+  pool_id: Int!
+  amount: BigInt!
+  joined: Boolean! # indicates if the bonded action if first to join the pool.
+  timestamp: Date!
+}
+
+#pool has been created
+type NominationPoolCreatedEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int! @index(unique: false)
+  depositor: String! @index
+  timestamp: Date!
+}
+
+type NominationPoolSlashedEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  amount: BigInt!
+  timestamp: Date!
+}
+
+# Request for unbond some amount from the pool, this event is emitted when the unbond extrinsic is called
+# The total unbond amount will not be more than current bonded amount
+type NominationPoolUnbondedEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  account: String! @index(unique: false) # account that unbonded from their pool
+  pool_id: Int!
+  # is the corresponding balance/amount was requested to be unbonded (this value is the actual argument passed to the unbound transaction) from the bonded pool
+  request_amount_to_unbond: BigInt!
+  # is the actual amount that was unbonded from the pool. This value is less than the requested amount to unbond if slashing occurred.
+  actual_amount_unbond: BigInt!
+  era_to_claim: Int! # is the era in which the balance will be unbonded. In the absence of slashing, these values will match. In the presence of slashing, the number of points that are issued in the unbonding pool will be less than the amount requested to be unbonded.
+  timestamp: Date!
+}
+
+type NominationPoolWithdrawnEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  account: String! @index(unique: false) # account that unbonded from their pool
+  pool_id: Int!
+  balance: BigInt!
+  point: BigInt!
+  timestamp: Date!
+}
+
+type NominationPoolDestroyedEvent @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  timestamp: Date!
+}
+
+enum NominationPoolState {
+  Open
+  Blocked
+  Destroying
+}
+
+type NominationPoolStateChanged @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  new_state: NominationPoolState!
+  timestamp: Date!
+}
+
+type NominationPoolMemberRemoved @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  account: String! @index(unique: false)
+  timestamp: Date!
+}
+
+type NominationPoolRolesUpdated @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  signer_account: String!
+  root_account: String
+  state_toggler_account: String
+  nominator_account: String
+  timestamp: Date!
+}
+
+# the unbound pool at era of pool pool_id has been slashed to balance.
+type NominationPoolUnbondingPoolSlashed @entity {
+  id: ID! #id is a required field
+  extrinsic_id: String! @index(unique: false)
+  pool_id: Int!
+  era: Int!
+  amount: BigInt!
+  timestamp: Date!
+}
