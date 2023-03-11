@@ -99,12 +99,6 @@ dataSources:
             module: nominationPools
             method: MemberRemoved
 
-        - handler: handleEventNominationPoolsRolesUpdated
-          kind: substrate/EventHandler
-          filter:
-            module: nominationPools
-            method: RolesUpdated
-
         - handler: handleEventNominationUnbondingPoolSlashed
           kind: substrate/EventHandler
           filter:

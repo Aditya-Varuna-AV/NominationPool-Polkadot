@@ -113,17 +113,6 @@ type NominationPoolMemberRemoved @entity {
   timestamp: Date!
 }
 
-type NominationPoolRolesUpdated @entity {
-  id: ID! #id is a required field
-  extrinsic_id: String! @index(unique: false)
-  pool_id: Int!
-  signer_account: String!
-  root_account: String
-  state_toggler_account: String
-  nominator_account: String
-  timestamp: Date!
-}
-
 # the unbound pool at era of pool pool_id has been slashed to balance.
 type NominationPoolUnbondingPoolSlashed @entity {
   id: ID! #id is a required field
